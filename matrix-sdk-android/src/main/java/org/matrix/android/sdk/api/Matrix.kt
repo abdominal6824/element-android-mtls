@@ -37,6 +37,7 @@ import org.matrix.android.sdk.internal.SessionManager
 import org.matrix.android.sdk.internal.di.DaggerMatrixComponent
 import org.matrix.android.sdk.internal.network.ApiInterceptor
 import org.matrix.android.sdk.internal.network.UserAgentHolder
+import org.matrix.android.sdk.internal.network.ssl.ClientCertificateHolder
 import org.matrix.android.sdk.internal.util.BackgroundDetectionObserver
 import org.matrix.android.sdk.internal.worker.MatrixWorkerFactory
 import java.util.concurrent.Executors
@@ -70,6 +71,7 @@ class Matrix(context: Context, matrixConfiguration: MatrixConfiguration) {
     init {
         val appContext = context.applicationContext
         Monarchy.init(appContext)
+        ClientCertificateHolder.keyManager = matrixConfiguration.clientCertificateKeyManager
         DaggerMatrixComponent.factory().create(appContext, matrixConfiguration).inject(this)
         if (appContext !is Configuration.Provider) {
             val configuration = Configuration.Builder()

@@ -54,6 +54,7 @@ import im.vector.app.features.crypto.keys.KeysImporter
 import im.vector.app.features.crypto.keysbackup.settings.KeysBackupManageActivity
 import im.vector.app.features.crypto.recover.BootstrapBottomSheet
 import im.vector.app.features.crypto.recover.SetupMode
+import im.vector.app.features.mtls.ClientCertificateSelector
 import im.vector.app.features.navigation.Navigator
 import im.vector.app.features.pin.PinCodeStore
 import im.vector.app.features.pin.PinMode
@@ -88,6 +89,7 @@ class VectorSettingsSecurityPrivacyFragment :
     @Inject lateinit var analyticsConfig: AnalyticsConfig
     @Inject lateinit var vectorPreferences: VectorPreferences
     @Inject lateinit var buildMeta: BuildMeta
+    @Inject lateinit var clientCertificateSelector: ClientCertificateSelector
 
     override var titleRes = CommonStrings.settings_security_and_privacy
     override val preferenceXmlRes = R.xml.vector_settings_security_privacy
@@ -147,6 +149,10 @@ class VectorSettingsSecurityPrivacyFragment :
 
     private val openPinCodeSettingsPref by lazy {
         findPreference<VectorPreference>("SETTINGS_SECURITY_PIN")!!
+    }
+
+    private val clientCertificatePref by lazy {
+        findPreference<VectorPreference>("SETTINGS_MTLS_CLIENT_CERTIFICATE_KEY")!!
     }
 
     private val analyticsCategory by lazy {
@@ -270,6 +276,51 @@ class VectorSettingsSecurityPrivacyFragment :
         }
     }
 
+    private fun setUpClientCertificate() {
+        refreshClientCertificatePref()
+        clientCertificatePref.setOnPreferenceClickListener {
+            val alias = clientCertificateSelector.currentAlias
+            if (alias == null) {
+                chooseClientCertificate()
+            } else {
+                MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle(CommonStrings.mtls_client_certificate_title)
+                        .setMessage(getString(CommonStrings.mtls_client_certificate_dialog_message, alias))
+                        .setPositiveButton(CommonStrings.mtls_client_certificate_change) { _, _ -> chooseClientCertificate() }
+                        .setNeutralButton(CommonStrings.mtls_client_certificate_remove) { _, _ ->
+                            clientCertificateSelector.clear()
+                            onClientCertificateChanged()
+                        }
+                        .setNegativeButton(CommonStrings.action_cancel, null)
+                        .show()
+            }
+            true
+        }
+    }
+
+    private fun chooseClientCertificate() {
+        clientCertificateSelector.select(requireActivity(), session.sessionParams.homeServerUrl) { alias ->
+            if (alias != null && view != null) {
+                onClientCertificateChanged()
+            }
+        }
+    }
+
+    private fun onClientCertificateChanged() {
+        refreshClientCertificatePref()
+        // Close idle connections, so that new ones are opened with the new certificate
+        lifecycleScope.launch(Dispatchers.IO) {
+            tryOrNull { session.getOkHttpClient().connectionPool.evictAll() }
+        }
+        requireContext().toast(CommonStrings.mtls_client_certificate_restart_hint)
+    }
+
+    private fun refreshClientCertificatePref() {
+        clientCertificatePref.summary = clientCertificateSelector.currentAlias
+                ?.let { getString(CommonStrings.mtls_client_certificate_current, it) }
+                ?: getString(CommonStrings.mtls_client_certificate_summary_none)
+    }
+
     override fun bindPref() {
         // Refresh Key Management section
         refreshKeysManagementSection()
@@ -279,6 +330,9 @@ class VectorSettingsSecurityPrivacyFragment :
 
         // Incognito Keyboard
         setUpIncognitoKeyboard()
+
+        // mTLS client certificate
+        setUpClientCertificate()
 
         // Pin code
         openPinCodeSettingsPref.setOnPreferenceClickListener {

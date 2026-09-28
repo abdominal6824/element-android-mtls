@@ -25,6 +25,7 @@ import org.matrix.android.sdk.api.provider.CustomEventTypesProvider
 import org.matrix.android.sdk.api.provider.MatrixItemDisplayNameFallbackProvider
 import org.matrix.android.sdk.api.provider.RoomDisplayNameFallbackProvider
 import java.net.Proxy
+import javax.net.ssl.X509KeyManager
 
 data class MatrixConfiguration(
         val applicationFlavor: String = "Default-application-flavor",
@@ -89,4 +90,10 @@ data class MatrixConfiguration(
          * CustomEventTypesProvider to provide custom event types to the sdk which should be processed with internal events.
          */
         val customEventTypesProvider: CustomEventTypesProvider? = null,
+        /**
+         * Optional KeyManager providing a TLS client certificate (mutual TLS / mTLS).
+         * When set, it is used for every TLS connection opened by the SDK (homeserver, identity server, media...).
+         * The KeyManager is queried at each TLS handshake, so it can return a different alias at runtime.
+         */
+        val clientCertificateKeyManager: X509KeyManager? = null,
 )

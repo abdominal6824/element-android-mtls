@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- mTLS: client certificate authentication -->
+    <string name="mtls_client_certificate_title">Client certificate (mTLS)</string>
+    <string name="mtls_client_certificate_choose">Choose a client certificate</string>
+    <string name="mtls_client_certificate_current">Client certificate: %1$s</string>
+    <string name="mtls_client_certificate_none">No client certificate selected</string>
+    <string name="mtls_client_certificate_summary_none">No certificate. Tap to choose a certificate installed on this device (Android Settings › Security › Encryption &amp; credentials › Install a certificate).</string>
+    <string name="mtls_client_certificate_dialog_message">Current certificate: %1$s</string>
+    <string name="mtls_client_certificate_change">Change</string>
+    <string name="mtls_client_certificate_remove">Remove</string>
+    <string name="mtls_client_certificate_restart_hint">Restart the application so that existing connections use the new certificate.</string>
+</resources>

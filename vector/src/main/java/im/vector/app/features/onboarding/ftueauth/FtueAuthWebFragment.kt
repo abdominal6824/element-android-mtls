@@ -18,6 +18,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.ClientCertRequest
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -27,6 +28,7 @@ import im.vector.app.core.utils.AssetReader
 import im.vector.app.databinding.FragmentLoginWebBinding
 import im.vector.app.features.login.JavascriptResponse
 import im.vector.app.features.login.SignMode
+import im.vector.app.features.mtls.proceedWithSelectedCertificate
 import im.vector.app.features.onboarding.OnboardingAction
 import im.vector.app.features.onboarding.OnboardingViewEvents
 import im.vector.app.features.onboarding.OnboardingViewState
@@ -114,6 +116,11 @@ class FtueAuthWebFragment :
         views.loginWebWebView.loadUrl(url)
 
         views.loginWebWebView.webViewClient = object : WebViewClient() {
+            override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest) {
+                // mTLS
+                request.proceedWithSelectedCertificate(view.context)
+            }
+
             override fun onReceivedSslError(
                     view: WebView, handler: SslErrorHandler,
                     error: SslError

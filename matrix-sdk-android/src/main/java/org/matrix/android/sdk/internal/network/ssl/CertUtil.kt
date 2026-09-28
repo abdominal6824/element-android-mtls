@@ -183,13 +183,35 @@ internal object CertUtil {
                 TLSSocketFactory(trustPinned, hsConfig.tlsVersions)
             } else {
                 val sslContext = SSLContext.getInstance("TLS")
-                sslContext.init(null, trustPinned, java.security.SecureRandom())
+                // mTLS: provide the client certificate KeyManager, if any
+                sslContext.init(ClientCertificateHolder.keyManagers(), trustPinned, java.security.SecureRandom())
                 sslContext.socketFactory
             }
 
             return PinnedSSLSocketFactory(sslSocketFactory, defaultTrustManager!!)
         } catch (e: Exception) {
             throw RuntimeException(e)
+        }
+    }
+
+    /**
+     * Create a SSLSocket factory using the system trust store and the client certificate KeyManager (mTLS).
+     * Used for the base OkHttp client, before any [HomeServerConnectionConfig] is known.
+     *
+     * @return the SSLSocket factory, or null if no client certificate KeyManager is configured.
+     */
+    fun newDefaultSSLSocketFactoryWithClientCertificate(): PinnedSSLSocketFactory? {
+        val keyManagers = ClientCertificateHolder.keyManagers() ?: return null
+        return try {
+            val tf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            tf.init(null as KeyStore?)
+            val trustManager = tf.trustManagers.filterIsInstance<X509TrustManager>().first()
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(keyManagers, arrayOf<TrustManager>(trustManager), java.security.SecureRandom())
+            PinnedSSLSocketFactory(sslContext.socketFactory, trustManager)
+        } catch (e: Exception) {
+            Timber.e(e, "## newDefaultSSLSocketFactoryWithClientCertificate() failed")
+            null
         }
     }
 

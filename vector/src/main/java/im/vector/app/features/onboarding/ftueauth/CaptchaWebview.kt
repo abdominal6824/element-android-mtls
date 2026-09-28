@@ -14,6 +14,7 @@ import android.net.http.SslError
 import android.os.Build
 import android.view.KeyEvent
 import android.view.View
+import android.webkit.ClientCertRequest
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -24,6 +25,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.vector.app.core.utils.AssetReader
 import im.vector.app.features.login.JavascriptResponse
+import im.vector.app.features.mtls.proceedWithSelectedCertificate
 import im.vector.app.features.onboarding.OnboardingViewState
 import im.vector.lib.strings.CommonStrings
 import org.matrix.android.sdk.api.util.MatrixJsonParser
@@ -58,6 +60,11 @@ class CaptchaWebview @Inject constructor(
         webView.requestLayout()
 
         webView.webViewClient = object : WebViewClient() {
+            override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest) {
+                // mTLS
+                request.proceedWithSelectedCertificate(view.context)
+            }
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 if (container.isAdded) {

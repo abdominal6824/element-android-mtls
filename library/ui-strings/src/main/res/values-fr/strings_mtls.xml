@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- mTLS : authentification par certificat client -->
+    <string name="mtls_client_certificate_title">Certificat client (mTLS)</string>
+    <string name="mtls_client_certificate_choose">Choisir un certificat client</string>
+    <string name="mtls_client_certificate_current">Certificat client : %1$s</string>
+    <string name="mtls_client_certificate_none">Aucun certificat client sélectionné</string>
+    <string name="mtls_client_certificate_summary_none">Aucun certificat. Touchez pour choisir un certificat installé sur l\'appareil (Paramètres Android › Sécurité › Chiffrement et identifiants › Installer un certificat).</string>
+    <string name="mtls_client_certificate_dialog_message">Certificat actuel : %1$s</string>
+    <string name="mtls_client_certificate_change">Changer</string>
+    <string name="mtls_client_certificate_remove">Retirer</string>
+    <string name="mtls_client_certificate_restart_hint">Redémarrez l\'application pour que les connexions existantes utilisent le nouveau certificat.</string>
+</resources>

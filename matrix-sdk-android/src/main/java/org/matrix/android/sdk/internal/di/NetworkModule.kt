@@ -33,6 +33,7 @@ import org.matrix.android.sdk.internal.network.UserAgentInterceptor
 import org.matrix.android.sdk.internal.network.httpclient.applyMatrixConfiguration
 import org.matrix.android.sdk.internal.network.interceptors.CurlLoggingInterceptor
 import org.matrix.android.sdk.internal.network.interceptors.FormattedJsonHttpLogger
+import org.matrix.android.sdk.internal.network.ssl.CertUtil
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -99,6 +100,12 @@ internal object NetworkModule {
                 }
                 .dispatcher(dispatcher)
                 .connectionSpecs(Collections.singletonList(spec))
+                .apply {
+                    // mTLS: present the client certificate even before a HomeServerConnectionConfig is applied
+                    CertUtil.newDefaultSSLSocketFactoryWithClientCertificate()?.let {
+                        sslSocketFactory(it.sslSocketFactory, it.x509TrustManager)
+                    }
+                }
                 .applyMatrixConfiguration(matrixConfiguration)
                 .build()
     }

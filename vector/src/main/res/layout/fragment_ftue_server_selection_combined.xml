@@ -165,10 +165,24 @@
             android:layout_height="wrap_content"
             android:text="@string/login_signup_submit"
             android:textAllCaps="true"
-            app:layout_constraintBottom_toTopOf="@id/chooseServerEmsContainer"
+            app:layout_constraintBottom_toTopOf="@id/chooseServerClientCertificate"
             app:layout_constraintEnd_toEndOf="@id/chooseServerGutterEnd"
             app:layout_constraintStart_toStartOf="@id/chooseServerGutterStart"
             app:layout_constraintTop_toBottomOf="@id/actionSpacing" />
+
+        <!-- mTLS: client certificate selection -->
+        <Button
+            android:id="@+id/chooseServerClientCertificate"
+            style="@style/Widget.Vector.Button.Text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/mtls_client_certificate_choose"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toTopOf="@id/chooseServerEmsContainer"
+            app:layout_constraintEnd_toEndOf="@id/chooseServerGutterEnd"
+            app:layout_constraintStart_toStartOf="@id/chooseServerGutterStart"
+            app:layout_constraintTop_toBottomOf="@id/chooseServerSubmit" />
 
         <Space
             android:id="@+id/submitSpacing"
@@ -176,7 +190,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/emsTopSpacing"
             app:layout_constraintHeight_percent="0.02"
-            app:layout_constraintTop_toBottomOf="@id/chooseServerSubmit" />
+            app:layout_constraintTop_toBottomOf="@id/chooseServerClientCertificate" />
 
         <!-- EMS section is temporarily hidden whilst we sync with marketing -->
         <androidx.constraintlayout.widget.Group
@@ -203,7 +217,7 @@
             android:layout_width="match_parent"
             android:layout_height="24dp"
             app:layout_constraintBottom_toTopOf="@id/chooseServerEmsIcon"
-            app:layout_constraintTop_toBottomOf="@id/chooseServerSubmit"
+            app:layout_constraintTop_toBottomOf="@id/chooseServerClientCertificate"
             app:layout_constraintVertical_bias="1"
             app:layout_constraintVertical_chainStyle="packed" />
 

@@ -43,6 +43,7 @@ import im.vector.app.features.invite.CompileTimeAutoAcceptInvites
 import im.vector.app.features.mdm.DefaultMdmService
 import im.vector.app.features.mdm.MdmData
 import im.vector.app.features.mdm.MdmService
+import im.vector.app.features.mtls.KeyChainClientKeyManager
 import im.vector.app.features.navigation.DefaultNavigator
 import im.vector.app.features.navigation.Navigator
 import im.vector.app.features.pin.PinCodeStore
@@ -142,6 +143,7 @@ import javax.inject.Singleton
             vectorPlugins: VectorPlugins,
             vectorCustomEventTypesProvider: VectorCustomEventTypesProvider,
             mdmService: MdmService,
+            clientCertificateKeyManager: KeyChainClientKeyManager,
     ): MatrixConfiguration {
         return MatrixConfiguration(
                 applicationFlavor = BuildConfig.FLAVOR_DESCRIPTION,
@@ -152,6 +154,7 @@ import javax.inject.Singleton
                 cryptoAnalyticsPlugin = vectorPlugins.cryptoMetricPlugin,
                 customEventTypesProvider = vectorCustomEventTypesProvider,
                 clientPermalinkBaseUrl = mdmService.getData(MdmData.PermalinkBaseUrl),
+                clientCertificateKeyManager = clientCertificateKeyManager,
                 syncConfig = SyncConfig(
                         syncFilterParams = SyncFilterParams(lazyLoadMembersForStateEvents = true, useThreadNotifications = true)
                 )

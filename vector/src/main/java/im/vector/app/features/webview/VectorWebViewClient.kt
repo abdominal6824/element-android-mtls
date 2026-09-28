@@ -12,11 +12,13 @@ package im.vector.app.features.webview
 import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.os.Build
+import android.webkit.ClientCertRequest
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import im.vector.app.features.mtls.proceedWithSelectedCertificate
 
 /**
  * This class inherits from WebViewClient. It has to be used with a WebView.
@@ -72,6 +74,11 @@ class VectorWebViewClient(private val eventListener: WebViewEventListener) : Web
             mInError = true
             eventListener.onPageError(request.url.toString(), error.errorCode, error.description.toString())
         }
+    }
+
+    override fun onReceivedClientCertRequest(view: WebView, request: ClientCertRequest) {
+        // mTLS
+        request.proceedWithSelectedCertificate(view.context)
     }
 
     private fun shouldOverrideUrl(url: String): Boolean {

@@ -32,6 +32,7 @@ import im.vector.app.core.utils.openApplicationStore
 import im.vector.app.core.utils.openUrlInChromeCustomTab
 import im.vector.app.core.utils.openUrlInExternalBrowser
 import im.vector.app.databinding.FragmentFtueServerSelectionCombinedBinding
+import im.vector.app.features.mtls.ClientCertificateSelector
 import im.vector.app.features.onboarding.MasSupportRequiredException
 import im.vector.app.features.onboarding.OnboardingAction
 import im.vector.app.features.onboarding.OnboardingFlow
@@ -45,6 +46,7 @@ import javax.inject.Inject
 class FtueAuthCombinedServerSelectionFragment :
         AbstractFtueAuthFragment<FragmentFtueServerSelectionCombinedBinding>() {
     @Inject lateinit var buildMeta: BuildMeta
+    @Inject lateinit var clientCertificateSelector: ClientCertificateSelector
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFtueServerSelectionCombinedBinding {
         return FragmentFtueServerSelectionCombinedBinding.inflate(inflater, container, false)
@@ -68,6 +70,8 @@ class FtueAuthCombinedServerSelectionFragment :
         }
         views.chooseServerGetInTouch.debouncedClicks { openUrlInExternalBrowser(requireContext(), getString(im.vector.app.config.R.string.ftue_ems_url)) }
         views.chooseServerSubmit.debouncedClicks { updateServerUrl() }
+        views.chooseServerClientCertificate.debouncedClicks { selectClientCertificate() }
+        renderClientCertificate()
         (Config.sunsetConfig as? SunsetConfig.Enabled)?.let { config ->
             views.chooseServerCardDownloadReplacementApp.debouncedClicks {
                 openApplicationStore(
@@ -85,6 +89,22 @@ class FtueAuthCombinedServerSelectionFragment :
             }
         }
         views.chooseServerInput.clearErrorOnChange(viewLifecycleOwner)
+    }
+
+    private fun selectClientCertificate() {
+        val serverUrl = views.chooseServerInput.content().takeIf { it.isNotEmpty() }?.ensureProtocol()
+        clientCertificateSelector.select(requireActivity(), serverUrl) {
+            // The view may have been destroyed while the system picker was displayed
+            if (view != null) {
+                renderClientCertificate()
+            }
+        }
+    }
+
+    private fun renderClientCertificate() {
+        views.chooseServerClientCertificate.text = clientCertificateSelector.currentAlias
+                ?.let { getString(CommonStrings.mtls_client_certificate_current, it) }
+                ?: getString(CommonStrings.mtls_client_certificate_choose)
     }
 
     private fun canSubmit(url: String) = url.isNotEmpty()

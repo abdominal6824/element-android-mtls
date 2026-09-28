@@ -131,6 +131,19 @@
 
     </im.vector.app.core.preference.VectorPreferenceCategory>
 
+    <!-- mTLS: client certificate -->
+    <im.vector.app.core.preference.VectorPreferenceCategory
+        android:key="SETTINGS_MTLS_CATEGORY_KEY"
+        android:title="@string/mtls_client_certificate_title">
+
+        <im.vector.app.core.preference.VectorPreference
+            android:key="SETTINGS_MTLS_CLIENT_CERTIFICATE_KEY"
+            android:persistent="false"
+            android:title="@string/mtls_client_certificate_title"
+            tools:summary="@string/mtls_client_certificate_summary_none" />
+
+    </im.vector.app.core.preference.VectorPreferenceCategory>
+
     <im.vector.app.core.preference.VectorPreferenceCategory
         android:key="SETTINGS_SECURITY_OTHER_CATEGORY"
         android:title="@string/settings_other">
